@@ -47,6 +47,7 @@ ignoretp = S{''}
 function varclean()
 
     current_frame = 0
+    interval = 0
     auto = 0
     burst = 0
     disabled = 0
@@ -93,11 +94,6 @@ function varclean()
     zergws = nil
     aoews = nil
     automb = nil
-
-    if jobvar ~= nil then
-        jobvar()
-    end
-
 end
 
 function check_conf()
@@ -114,10 +110,9 @@ function check_conf()
         conf_file:create()
         local conf_base = file.read(conf_path..'\\auto.lua')
         conf_file:write(conf_base)
-    end
+    end    
 
-    require(char_name)
-
+    require(char_name)    
 end
 
 function check_sc()
@@ -296,9 +291,6 @@ buff_dur = {[163]=40,[164]=30,[470]=60}
 info = {}
 resonating = {}
 buffs = {}
-check_conf()
-varclean()
-check_sc()
 
 colors = {}            -- Color codes by Sammeh
 colors.Light =         '\\cs(255,255,255)'
@@ -396,7 +388,11 @@ initialize = function(text, settings)
     properties:append('${disp_info}')
     text:clear()
     text:append(properties:concat('\n'))
-    jobvar()
+
+    check_conf()
+    varclean()
+    jobvar()        
+    check_sc()    
 end
 skill_props:register_event('reload', initialize)
 
@@ -1986,7 +1982,7 @@ windower.register_event('job change', function(job, lvl)
 end)
 
 windower.register_event('login',function()
-    initialize()
+    initialize(skill_props, settings)
 end)
 
 windower.register_event('zone change', function()
@@ -1999,7 +1995,7 @@ end)
 windower.register_event('logout', 'job change', function(...)   
 
     -- [MM] Clean up / reset settings when changing jobs or logging out
-	varclean()
+	initialize(skill_props, settings)
 
     windower.add_to_chat(207, '%s: All settings have been reset':format(_addon.name))
 end)
