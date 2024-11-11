@@ -25,10 +25,10 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ]]
-_addon.author = 'Ivaar; Modified by Cypan (Bahamut)'
+_addon.author = 'Ivaar; Modified by Cypan (Bahamut); Modified again by Jintawk (Asura)'
 _addon.command = 'sc'
 _addon.name = 'SkillchainsPlus'
-_addon.version = '2.3'
+_addon.version = '2.4'
 
 require('luau')
 require('pack')
@@ -46,6 +46,7 @@ ignoretp = S{''}
 
 function varclean()
 
+    current_frame = 0
     auto = 0
     burst = 0
     disabled = 0
@@ -93,7 +94,9 @@ function varclean()
     aoews = nil
     automb = nil
 
-    jobvar()
+    if jobvar ~= nil then
+        jobvar()
+    end
 
 end
 
@@ -1856,71 +1859,46 @@ windower.register_event('addon command', function(cmd, ...)
     elseif cmd == 'watch' then
         watch_player(unpack({...}))
     elseif cmd == 'status' then
-        if auto == 1 then
-            windower.send_command('input /echo Auto Skillchain Mode')
+        -- Define a table with settings and their corresponding labels
+        local settings = {
+            { name = "Auto Skillchain Mode", var = auto },
+            { name = "MB Skillchain Mode", var = burst },
+            { name = "Ultimate Skillchain Mode", var = ultimate },
+            { name = "AM Skillchain Mode", var = am },
+            { name = "Preferred Skillchain Mode", var = prefer },
+            { name = "Endless Skillchain Mode", var = endless },
+            { name = "Buddy Skillchain Mode", var = buddy },
+            { name = "Spam Weaponskill Mode", var = spam },
+            { name = "Cleave Weaponskill Mode", var = cleave },
+            { name = "Starter Weaponskill Mode", var = starter },
+            { name = "Ranged Weaponskill Mode", var = ranged },
+            { name = "Melee Weaponskill Mode", var = melee },
+            { name = "Autonuke Magicburst Mode", var = autonuke },
+            { name = "Open Skillchain Mode", var = open },
+            { name = "Close Skillchain Mode", var = close },
+            { name = "Innin Mode", var = innin },
+            { name = "Yonin Mode", var = yonin },
+            { name = "Strict Mode", var = strict },
+            { name = "While Readying Mode", var = w_readies },
+            { name = "While Casting Mode", var = w_casting },
+            { name = "Light Skillchain Mode", var = light },
+            { name = "Dark Skillchain Mode", var = dark }
+        }
+
+        -- Track if any setting is enabled
+        local enabled_settings = {}
+
+        -- Loop through settings and send a message if the setting is on
+        for _, setting in ipairs(settings) do
+            if setting.var == 1 then
+                windower.send_command('input /echo ' .. setting.name)
+                table.insert(enabled_settings, setting.name)
+            end
         end
-        if burst == 1 then
-            windower.send_command('input /echo MB Skillchain Mode')
-        end
-        if ultimate == 1 then
-            windower.send_command('input /echo Ultimate Skillchain Mode')
-        end
-        if am == 1 then
-            windower.send_command('input /echo AM Skillchain Mode')
-        end
-        if prefer == 1 then
-            windower.send_command('input /echo Preferred Skillchain Mode')
-        end
-        if endless == 1 then
-            windower.send_command('input /echo Endless Skillchain Mode')
-        end
-        if buddy == 1 then
-            windower.send_command('input /echo Buddy Skillchain Mode')
-        end
-        if spam == 1 then
-            windower.send_command('input /echo Spam Weaponskill Mode')
-        end
-        if cleave == 1 then
-            windower.send_command('input /echo Cleave Weaponskill Mode')
-        end
-        if starter == 1 then
-            windower.send_command('input /echo Starter Weaponskill Mode')
-        end
-        if ranged == 1 then
-            windower.send_command('input /echo Ranged Weaponskill Mode')
-        end
-        if melee == 1 then
-            windower.send_command('input /echo Melee Weaponskill Mode')
-        end
-        if autonuke == 1 then
-            windower.send_command('input /echo Autonuke Magicburst Mode')
-        end
-        if open == 1 then
-		        windower.send_command('input /echo Open Skillchain Mode')
-        end
-        if close == 1 then
-		        windower.send_command('input /echo Close Skillchain Mode')
-        end
-        if innin == 1 then
-		        windower.send_command('input /echo Innin Mode')
-        end
-        if yonin == 1 then
-            windower.send_command('input /echo Yonin Mode')
-        end
-        if strict == 1 then
-            windower.send_command('input /echo Strict Mode')
-        end
-        if w_readies == 1 then
-            windower.send_command('input /echo While Readying Mode')
-        end
-        if w_casting == 1 then
-            windower.send_command('input /echo While Casting Mode')
-        end
-        if light == 1 then
-            windower.send_command('input /echo Light Skillchain Mode')
-        end
-        if dark == 1 then
-            windower.send_command('input /echo Dark Skillchain Mode')
+
+        -- If no settings are enabled, print "no settings enabled"
+        if #enabled_settings == 0 then
+            windower.send_command('input /echo No settings enabled')            
         end
     elseif cmd == 'reload' then
         windower.send_command('lua reload skillchains')
@@ -2007,10 +1985,23 @@ windower.register_event('job change', function(job, lvl)
     end
 end)
 
+windower.register_event('login',function()
+    initialize()
+end)
+
 windower.register_event('zone change', function()
 
-    varclean()
+    -- [MM] Disabled varclean on zone change so that settings are not lost (This behaviour was annoying)    
+    --varclean()
 
+end)
+
+windower.register_event('logout', 'job change', function(...)   
+
+    -- [MM] Clean up / reset settings when changing jobs or logging out
+	varclean()
+
+    windower.add_to_chat(207, '%s: All settings have been reset':format(_addon.name))
 end)
 
 windower.register_event('load', function()

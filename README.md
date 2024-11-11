@@ -1,3 +1,11 @@
+# Fork details
+
+This fork contains the following changes:
+
+- The addon no longer resets all settings every time you change zone. This is now only done on job change / logout
+- Fix: missing quotations which were causing the addon to error when trying to use weapon skills
+- Fix: if the addon was set to autoload on login it would error, this is now fixed 
+
 # Requirements
 
 All files including the data folder, nukes, skills, and skillchainsplus are required to function correctly.
