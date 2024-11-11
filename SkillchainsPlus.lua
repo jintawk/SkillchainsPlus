@@ -1369,7 +1369,7 @@ end
 function perform_ws(ws_name)
 	ws_name = string.gsub(ws_name, '[ \t]+%f[\r\n%z]', '')
   if tpdelay == 0 then
-  	windower.send_command('input /ws '..ws_name..' <t>')
+  	windower.send_command('input /ws "'..ws_name..'" <t>')
     ws_delay()
   end
 end
@@ -1928,9 +1928,9 @@ windower.register_event('addon command', function(cmd, ...)
         windower.add_to_chat(207, '%s: valid commands [ status | auto | mb | am | buddy | prefer | endless | melee | ranged | autonuke | spam | cleave | starter | ignore | open | close | save | move | burst | weapon | spell | pet | props | step | timer | color | aeonic | reload ]':format(_addon.name))
     elseif cmd == 'autoskill' then
         if autosc ~= nil then
-            windower.send_command('input /ws '..autosc..' <t>')
+            windower.send_command('input /ws "'..autosc..'" <t>')
         else
-            windower.send_command('input /ws '..openws..' <t>')
+            windower.send_command('input /ws "'..openws..'" <t>')
         end
     elseif cmd == 'autoburst' then
         if automb ~= nil then
@@ -1938,7 +1938,7 @@ windower.register_event('addon command', function(cmd, ...)
         end
     elseif cmd == 'spamskill' then
         if zergws ~= nil then
-            windower.send_command('input /ws '..zergws..' <t>')
+            windower.send_command('input /ws "'..zergws..'" <t>')
         end
     elseif cmd == 'ultimate' then
         if ultimate == 1 then
