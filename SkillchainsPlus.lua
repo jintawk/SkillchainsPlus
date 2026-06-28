@@ -952,10 +952,11 @@ windower.register_event('prerender', function()
         end
 
         if player.main_job == 'BST' then
-            if (windower.ffxi.get_ability_recasts()[102] > 0) then
-                if (windower.ffxi.get_ability_recasts()[102] > (bstrecast * 2)) then
+            local sicrecast = windower.ffxi.get_ability_recasts()[102] or 0
+            if (sicrecast > 0) then
+                if (sicrecast > (bstrecast * 2)) then
                     sicdelay = 3
-                elseif (windower.ffxi.get_ability_recasts()[102] > (bstrecast * 1)) then
+                elseif (sicrecast > (bstrecast * 1)) then
                     sicdelay = 2
                 else
                     sicdelay = 1
@@ -966,7 +967,7 @@ windower.register_event('prerender', function()
         end
 
         if player.main_job == 'SMN' then
-            if (windower.ffxi.get_ability_recasts()[173] > 0) then
+            if ((windower.ffxi.get_ability_recasts()[173] or 0) > 0) then
                 bpdelay = 1
             else
                 bpdelay = 0
